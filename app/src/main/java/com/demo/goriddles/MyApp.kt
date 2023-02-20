@@ -4,6 +4,7 @@ import android.app.ActivityManager
 import android.app.Application
 import com.demo.goriddles.ac.HomeAc
 import com.demo.goriddles.conf.Fire
+import com.demo.goriddles.conf.ServerOkManager
 import com.demo.goriddles.util.AcRegister
 import com.github.shadowsocks.Core
 import com.tencent.mmkv.MMKV
@@ -19,6 +20,7 @@ class MyApp:Application() {
             return
         }
         AcRegister.register(this)
+        ServerOkManager.getServerList()
         Fire.readFire()
     }
 

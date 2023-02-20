@@ -29,11 +29,11 @@ object AcRegister {
                 goJob=null
                 if (pages==1){
                     goFront=true
-//                    if (reload){
-//                        if (ActivityUtils.isActivityExistsInStack(HomeAc::class.java)){
-//                            activity.startActivity(Intent(activity, MainActivity::class.java))
-//                        }
-//                    }
+                    if (reload){
+                        if (ActivityUtils.isActivityExistsInStack(HomeAc::class.java)){
+                            activity.startActivity(Intent(activity, MainActivity::class.java))
+                        }
+                    }
                     reload=false
                 }
             }
@@ -49,8 +49,8 @@ object AcRegister {
                     goJob= GlobalScope.launch {
                         delay(3000L)
                         reload=true
-//                        ActivityUtils.finishActivity(MainPage::class.java)
-//                        ActivityUtils.finishActivity(AdActivity::class.java)
+                        ActivityUtils.finishActivity(MainActivity::class.java)
+                        ActivityUtils.finishActivity(AdActivity::class.java)
                     }
                 }
             }

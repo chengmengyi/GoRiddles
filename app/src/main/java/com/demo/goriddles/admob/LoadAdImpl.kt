@@ -4,6 +4,7 @@ import com.demo.goriddles.bean.AdBean
 import com.demo.goriddles.bean.AdResultBean
 import com.demo.goriddles.conf.Fire
 import com.demo.goriddles.conf.Local
+import com.demo.goriddles.util.AdShowed
 import com.demo.goriddles.util.logGo
 import org.json.JSONObject
 
@@ -14,6 +15,10 @@ object LoadAdImpl:BaseLoadAd() {
     private val loadResult= hashMapOf<String,AdResultBean>()
 
     fun load(type:String,retryNum:Int=0){
+        if (AdShowed.limit()){
+            logGo("limit")
+            return
+        }
         if (loading.contains(type)){
             logGo("$type loading")
             return

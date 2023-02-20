@@ -2,6 +2,7 @@ package com.demo.goriddles.conf
 
 import com.demo.goriddles.bean.ServerBean
 import com.demo.goriddles.server.ServerInfoManager
+import com.demo.goriddles.util.AdShowed
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.remoteconfig.ktx.remoteConfig
 import com.lzy.okgo.OkGo
@@ -22,13 +23,57 @@ object Fire {
 //        val remoteConfig = Firebase.remoteConfig
 //        remoteConfig.fetchAndActivate().addOnCompleteListener {
 //            if (it.isSuccessful){
+//                parseServerJson(remoteConfig.getString("flash_ser"))
+//                parseCity(remoteConfig.getString("flash_smart"))
 //                saveAdJson(remoteConfig.getString("riddles_ad"))
 //            }
 //        }
     }
 
+    private fun parseServerJson(string: String){
+        try {
+            ServerInfoManager.onlineServerList.clear()
+            val jsonArray = JSONArray(string)
+            for (index in 0 until jsonArray.length()){
+                val jsonObject = jsonArray.getJSONObject(index)
+                ServerInfoManager.onlineServerList.add(
+                    ServerBean(
+                        goRi_pwd = jsonObject.optString("goRi_pwd"),
+                        goRi_account=jsonObject.optString("goRi_account"),
+                        goRi_port = jsonObject.optInt("goRi_port"),
+                        goRi_country=jsonObject.optString("goRi_country"),
+                        goRi_city=jsonObject.optString("goRi_city"),
+                        goRi_ip=jsonObject.optString("goRi_ip")
+                    )
+                )
+            }
+            writeServer(ServerInfoManager.onlineServerList)
+        }catch (e:Exception){
+
+        }
+    }
+
+    private fun parseCity(string: String){
+        try {
+            ServerInfoManager.cityList.clear()
+            val jsonArray = JSONArray(string)
+            for (index in 0 until jsonArray.length()){
+                ServerInfoManager.cityList.add(jsonArray.optString(index))
+            }
+        }catch (e:Exception){
+
+        }
+    }
+
     private fun saveAdJson(string:String){
-        MMKV.defaultMMKV().encode("riddles_ad",string)
+        try {
+            val jsonObject = JSONObject(string)
+            AdShowed.setMax(jsonObject.optInt("max_click"),jsonObject.optInt("max_show"))
+            MMKV.defaultMMKV().encode("riddles_ad",string)
+        }catch (e:Exception){
+
+        }
+
     }
 
     fun readAdJson():String{

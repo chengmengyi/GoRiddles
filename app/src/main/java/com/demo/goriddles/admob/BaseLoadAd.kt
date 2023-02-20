@@ -3,6 +3,7 @@ package com.demo.goriddles.admob
 import com.demo.goriddles.bean.AdBean
 import com.demo.goriddles.bean.AdResultBean
 import com.demo.goriddles.myApp
+import com.demo.goriddles.util.AdShowed
 import com.demo.goriddles.util.logGo
 import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdLoader
@@ -23,8 +24,8 @@ abstract class BaseLoadAd {
         logGo("start load $type ad ,${adBean.toString()}")
         when (adBean.type) {
             "o" ->loadOpen(type, adBean, callback)
-            "i" ->loadOpen(type, adBean, callback)
-            "n" ->loadOpen(type, adBean, callback)
+            "i" ->loadInterstitial(type, adBean, callback)
+            "n" ->loadNative(type, adBean, callback)
         }
     }
 
@@ -89,6 +90,11 @@ abstract class BaseLoadAd {
                     super.onAdFailedToLoad(p0)
                     logGo("load $type fail,${p0.message}")
                     callback.invoke(null)
+                }
+
+                override fun onAdClicked() {
+                    super.onAdClicked()
+                    AdShowed.addClick()
                 }
             })
             .withNativeAdOptions(

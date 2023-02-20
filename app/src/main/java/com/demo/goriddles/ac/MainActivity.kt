@@ -19,35 +19,34 @@ class MainActivity : BaseAc(R.layout.activity_main) {
     private val showFullAd by lazy { ShowFullAd(this,Local.OPEN) }
 
     override fun initView() {
+        AdShowed.readLocalNum()
         AdShowed.reset()
-//        LoadAdImpl.preLoadAd()
+        LoadAdImpl.preLoadAd()
         startAnimator()
     }
 
     private fun startAnimator(){
         valueAnimator=ValueAnimator.ofInt(0, 100).apply {
-            duration=3000L
+            duration=10000L
             interpolator = LinearInterpolator()
             addUpdateListener {
                 val progress = it.animatedValue as Int
                 launch_progress.progress=progress
                 val pro = (10 * (progress / 100.0F)).toInt()
-//                if (pro in 2..9){
-//                    showFullAd.show(
-//                        showing = {
-//                            stopAnimator()
-//                            launch_progress.progress=100
-//                        },
-//                        close = {
-//                            toHome()
-//                        }
-//                    )
-//                }else if (pro>=10){
-//                    toHome()
-//                }
+                if (pro in 2..9){
+                    showFullAd.show(
+                        showing = {
+                            stopAnimator()
+                            launch_progress.progress=100
+                        },
+                        close = {
+                            toHome()
+                        }
+                    )
+                }else if (pro>=10){
+                    toHome()
+                }
             }
-
-            doOnEnd { toHome() }
             start()
         }
     }

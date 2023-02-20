@@ -2,11 +2,13 @@ package com.demo.goriddles.util
 
 import android.content.Context
 import android.net.ConnectivityManager
+import android.provider.Settings
 import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import com.demo.goriddles.R
+import com.tencent.mmkv.MMKV
 
 fun logGo(string: String){
     Log.e("qwer",string)
@@ -65,4 +67,18 @@ fun Context.showNoNetDialog(){
         show()
     }
 }
+
+fun getAndroidId(context: Context): String {
+    try {
+        val id: String = Settings.Secure.getString(
+            context.getContentResolver(),
+            Settings.Secure.ANDROID_ID
+        )
+        return if ("9774d56d682e549c" == id) "" else id ?: ""
+    }catch (e:Exception){
+
+    }
+    return ""
+}
+
 

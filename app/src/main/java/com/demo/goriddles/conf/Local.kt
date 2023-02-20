@@ -10,6 +10,7 @@ object Local {
     const val CONNECT="enterid_reward"
     const val HOME="enterid_home"
     const val RESULT="enterid_result"
+    const val BACK="enterid_time"
 
 
     const val SERVER_LIST="""[
@@ -20,11 +21,21 @@ object Local {
     "goRi_country": "Japan",
     "goRi_city": "Tokyo",
     "goRi_ip": "100.223.52.0"
+  },
+   {
+    "goRi_pwd": "123456",
+    "goRi_account": "chacha20-ietf-poly1305",
+    "goRi_port": 100,
+    "goRi_country": "United States",
+    "goRi_city": "newyork",
+    "goRi_ip": "100.223.52.1"
   }
 ]"""
 
 
     const val AD_LIST="""{
+            "max_click":15,
+    "max_show":50,
     "enterid_open": [
         {
             "from": "admob",

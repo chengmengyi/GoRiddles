@@ -80,11 +80,11 @@ class ShowNativeAd(
             }
         }
 
-
         if (showDesc){
-//            viewNative.bodyView=baseAc.findViewById(R.id.nad)
-//            (viewNative.bodyView as AppCompatTextView).text=nativeAd.body
+            viewNative.bodyView=baseAc.findViewById(R.id.native_desc)
+            (viewNative.bodyView as AppCompatTextView).text=adResult.body
         }
+
 
         viewNative.headlineView=baseAc.findViewById(R.id.native_title)
         (viewNative.headlineView as AppCompatTextView).text=adResult.headline
@@ -92,7 +92,7 @@ class ShowNativeAd(
         viewNative.setNativeAd(adResult)
         baseAc.findViewById<AppCompatImageView>(R.id.iv_native_cover).show(false)
 
-
+        AdShowed.addShow()
         LoadAdImpl.removeAd(type)
         LoadAdImpl.load(type)
         AdShowed.setShowed(type,true)

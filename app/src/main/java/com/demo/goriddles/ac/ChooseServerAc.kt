@@ -5,15 +5,20 @@ import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.demo.goriddles.R
 import com.demo.goriddles.adapter.ServerAdapter
+import com.demo.goriddles.admob.LoadAdImpl
+import com.demo.goriddles.admob.ShowFullAd
 import com.demo.goriddles.base.BaseAc
 import com.demo.goriddles.bean.ServerBean
+import com.demo.goriddles.conf.Local
 import com.demo.goriddles.server.ConnectServer
 import kotlinx.android.synthetic.main.activity_choose_server.*
 
 class ChooseServerAc:BaseAc(R.layout.activity_choose_server) {
+    private val showBackAd by lazy { ShowFullAd(this,Local.BACK) }
     private val myAdapter by lazy { ServerAdapter(this){ click(it) } }
 
     override fun initView() {
+        LoadAdImpl.load(Local.BACK)
         immersionBar.statusBarView(top_view).init()
         iv_back.setOnClickListener { onBackPressed() }
 
@@ -59,6 +64,12 @@ class ChooseServerAc:BaseAc(R.layout.activity_choose_server) {
     }
 
     override fun onBackPressed() {
-        finish()
+        showBackAd.show(
+            emptyBack = true,
+            showing = {},
+            close = {
+                finish()
+            }
+        )
     }
 }

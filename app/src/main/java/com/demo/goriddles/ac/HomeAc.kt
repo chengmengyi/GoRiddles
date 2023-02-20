@@ -7,6 +7,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.net.VpnService
 import android.view.Gravity
+import android.view.View
 import android.view.animation.LinearInterpolator
 import androidx.appcompat.app.AlertDialog
 import androidx.core.animation.doOnEnd
@@ -36,8 +37,8 @@ class HomeAc:BaseAc(R.layout.activity_home), ConnectServer.IConnectCallback, Con
     private val instance= SizeUtils.dp2px(91F)
     private var connectAnimator:ValueAnimator?=null
 
-//    private val showConnectAd by lazy { ShowFullAd(this,Local.CONNECT) }
-//    private val showHomeAd by lazy { ShowNativeAd(Local.HOME,this) }
+    private val showConnectAd by lazy { ShowFullAd(this,Local.CONNECT) }
+    private val showHomeAd by lazy { ShowNativeAd(Local.HOME,this) }
 
     private val registerResult=registerForActivityResult(StartService()) {
         if (!it && permission) {
@@ -51,6 +52,7 @@ class HomeAc:BaseAc(R.layout.activity_home), ConnectServer.IConnectCallback, Con
 
 
     override fun initView() {
+        iv_guide.show(AdShowed.firstLoad)
         immersionBar.statusBarView(top_view).init()
 
         ConnectServer.init(this,this)
@@ -61,15 +63,24 @@ class HomeAc:BaseAc(R.layout.activity_home), ConnectServer.IConnectCallback, Con
 
     private fun setClick(){
         iv_connect_btn.setOnClickListener {
+            if (drawer_layout.isOpen) return@setOnClickListener
             clickConnect()
         }
 
-        iv_choose_server.setOnClickListener { startActivityForResult(Intent(this,ChooseServerAc::class.java),1000) }
+        iv_connect_btn_bg.setOnClickListener { iv_connect_btn.performClick() }
+
+        iv_guide.setOnClickListener { iv_connect_btn.performClick() }
+
+        iv_choose_server.setOnClickListener {
+            if (!drawer_layout.isOpen&&!AdShowed.firstLoad&&canClick){
+                startActivityForResult(Intent(this,ChooseServerAc::class.java),1000)
+            }
+        }
 
         iv_choose.setOnClickListener { iv_choose_server.performClick() }
 
         iv_set.setOnClickListener {
-            if (!drawer_layout.isOpen){
+            if (!drawer_layout.isOpen&&!AdShowed.firstLoad&&canClick){
                 drawer_layout.openDrawer(Gravity.LEFT)
             }
         }
@@ -104,6 +115,10 @@ class HomeAc:BaseAc(R.layout.activity_home), ConnectServer.IConnectCallback, Con
         LoadAdImpl.load(Local.RESULT)
         if (!canClick) return
         canClick=false
+        if (AdShowed.firstLoad){
+            AdShowed.firstLoad=false
+            iv_guide.show(AdShowed.firstLoad)
+        }
         if (ConnectServer.isConnected()){
             ConnectServer.disconnect()
             updateDisConnectingUI()
@@ -134,32 +149,32 @@ class HomeAc:BaseAc(R.layout.activity_home), ConnectServer.IConnectCallback, Con
     private fun startConnectAnimator(connect:Boolean){
         this.connect=connect
         connectAnimator= ValueAnimator.ofInt(0, 100).apply {
-            duration=3000L
+            duration=10000L
             interpolator = LinearInterpolator()
             addUpdateListener {
                 val pro = it.animatedValue as Int
                 iv_connect_btn.translationY=getTranslationY(connect, pro)
                 val duration = (10 * (pro / 100.0F)).toInt()
-//                if (duration in 2..9){
-//                    showConnectAd.show(
-//                        showing = {
-//                            stopConnectAnimator()
-//                            iv_connect_btn.translationY=getTranslationY(connect, 100)
-//                        },
-//                        close = {
-//                            checkConnectResult()
-//                        }
-//                    )
-//                }else if (duration>=10){
-//                    checkConnectResult()
-//                }
+                if (duration in 2..9){
+                    showConnectAd.show(
+                        showing = {
+                            stopConnectAnimator()
+                            checkConnectResult(jump = false)
+                            iv_connect_btn.translationY=getTranslationY(connect, 100)
+                        },
+                        close = {
+                            checkConnectResult()
+                        }
+                    )
+                }else if (duration>=10){
+                    checkConnectResult()
+                }
             }
-            doOnEnd { checkConnectResult() }
             start()
         }
     }
 
-    private fun checkConnectResult(){
+    private fun checkConnectResult(jump:Boolean=true){
         val bool=if(connect) ConnectServer.isConnected() else ConnectServer.isDisconnected()
         if (bool){
             if (connect){
@@ -168,12 +183,11 @@ class HomeAc:BaseAc(R.layout.activity_home), ConnectServer.IConnectCallback, Con
                 updateStoppedUI()
                 updateServerInfo()
             }
-            if(AcRegister.goFront){
+            if(AcRegister.goFront&&jump){
                 startActivity(Intent(this,ResultAc::class.java).apply {
                     putExtra("connect",connect)
                 })
             }
-
         }else{
             updateStoppedUI()
             showToast(if (connect) "Connect Fail" else "Disconnect Fail")
@@ -272,7 +286,15 @@ class HomeAc:BaseAc(R.layout.activity_home), ConnectServer.IConnectCallback, Con
     override fun onResume() {
         super.onResume()
         if (!AdShowed.adShowed(Local.HOME)){
-//            showHomeAd.show()
+            showHomeAd.show(showDesc = false)
+        }
+    }
+
+    override fun onBackPressed() {
+        if(iv_guide.visibility==View.VISIBLE){
+            iv_guide.show(false)
+        }else{
+            finish()
         }
     }
 
@@ -281,7 +303,7 @@ class HomeAc:BaseAc(R.layout.activity_home), ConnectServer.IConnectCallback, Con
         stopConnectAnimator()
         ConnectServer.onDestroy()
         ConnectTimeManager.setTimerCallback(null)
-//        showHomeAd.endShow()
+        showHomeAd.endShow()
         AdShowed.setShowed(Local.HOME,false)
     }
 }

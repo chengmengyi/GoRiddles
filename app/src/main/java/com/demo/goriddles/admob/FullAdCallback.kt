@@ -2,6 +2,7 @@ package com.demo.goriddles.admob
 
 import com.demo.goriddles.base.BaseAc
 import com.demo.goriddles.conf.Local
+import com.demo.goriddles.util.AdShowed
 import com.google.android.gms.ads.AdError
 import com.google.android.gms.ads.FullScreenContentCallback
 import kotlinx.coroutines.Dispatchers
@@ -24,6 +25,7 @@ class FullAdCallback(
     override fun onAdShowedFullScreenContent() {
         super.onAdShowedFullScreenContent()
         LoadAdImpl.showingFull=true
+        AdShowed.addShow()
         LoadAdImpl.removeAd(type)
     }
 
@@ -32,6 +34,12 @@ class FullAdCallback(
         LoadAdImpl.showingFull=false
         LoadAdImpl.removeAd(type)
         onClose()
+    }
+
+
+    override fun onAdClicked() {
+        super.onAdClicked()
+        AdShowed.addClick()
     }
 
     private fun onClose(){
